@@ -1,11 +1,8 @@
-import userModel from "../models/auth.model";
 import {
-  generateTokens,
   validateAccessToken,
-  validateRefreshToken,
 } from "../utlis/auth.utils";
 
-export const authenticate = async (req, res, next) => {
+export const authenticate = (req, res, next) => {
   const { accessToken } = req.headers.authorization?.split(" ")[1];
 
   if(!accessToken){
@@ -25,3 +22,13 @@ export const authenticate = async (req, res, next) => {
     });
   }
 };
+
+export const authoriseEmployer = async(req, res, next)=> {
+  if(req.user.role !== "recruiter"){
+    return res.status(403).json({
+      message: "Unauthorised Access"
+    })
+  }
+
+  next();
+}
