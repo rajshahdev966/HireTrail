@@ -14,7 +14,7 @@ export const registerValidator = [
         .exists().withMessage("Password is required").bail()
         .isString().withMessage("Password must be string").bail()
         .isLength({min: 6, max: 50}).withMessage("Password must be between 6 to 50 characters").bail()
-        .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/).withMessage("Please fill a strong password"),
+        .isStrongPassword().withMessage("Password must contain atleast one lowercase, one uppercase, symbol and number"),
     body("phoneNumber")
         .exists().withMessage("Phone number is required").bail()
         .isString().withMessage("Phone number must be string").bail()

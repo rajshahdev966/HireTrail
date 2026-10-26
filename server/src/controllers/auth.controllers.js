@@ -1,5 +1,6 @@
-import userModel from "../models/auth.model";
-import { generateTokens, validateRefreshToken } from "../utlis/auth.utils";
+import userModel from "../models/auth.model.js";
+import { generateTokens, validateRefreshToken } from "../utlis/auth.utils.js";
+import bcrypt from "bcryptjs"
 
 export const registerController = async (req, res) => {
   const { email, password, name, phoneNumber } = req.body;
@@ -76,7 +77,6 @@ export const loginController = async (req, res) => {
     data: {
       user: {
         email,
-        name,
       },
       accessToken,
     },

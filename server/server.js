@@ -1,6 +1,6 @@
-import app from "./src/app/app";
-import config from "./src/config/config";
-import connectDb from "./src/config/db";
+import app from "./src/app/app.js";
+import config from "./src/config/config.js";
+import connectDb from "./src/config/db.js";
 
 await connectDb();
 

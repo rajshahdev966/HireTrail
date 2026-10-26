@@ -1,9 +1,9 @@
 import {
   validateAccessToken,
-} from "../utlis/auth.utils";
+} from "../utlis/auth.utils.js";
 
 export const authenticate = (req, res, next) => {
-  const { accessToken } = req.headers.authorization?.split(" ")[1];
+  const accessToken = req.headers.authorization?.split(" ")[1];
 
   if(!accessToken){
     return res.status(400).json({

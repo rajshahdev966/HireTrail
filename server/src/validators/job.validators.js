@@ -34,12 +34,16 @@ export const createJobValidator = [
     .isIn(["Remote", "Hybrid", "On-site"])
     .withMessage("Invalid workplace type"),
 
+  body("salary")
+    .exists().withMessage("Salary information is required").bail()
+    .isObject().withMessage("Salary must be a object"),
+
   body("salary.currency")
     .optional()
     .isIn(["$", "Rs"])
     .withMessage("Invalid Currency"),
   body("salary.minimumSalary")
-    .exists()
+    .exists({values: "null"})
     .withMessage("Minimum salary is required")
     .bail()
     .isInt({ min: 0 })
@@ -49,9 +53,10 @@ export const createJobValidator = [
     .withMessage("Maximum salary is required")
     .bail()
     .isInt({ min: 0 })
-    .withMessage("Salary must be a positive integer number")
-    .custom((salary) => {
-      if (salary.maximumSalary < salary.minimumSalary) {
+    .withMessage("Salary must be a positive integer number").bail()
+    .custom((maximumSalary, {req}) => {
+      const minimumSalary = req.body.salary.minimumSalary;
+      if (maximumSalary < minimumSalary) {
         throw new Error("Maximum salary can't be less than minimum salary");
       }
       return true;

@@ -1,7 +1,7 @@
 import {Router} from "express"
-import { loginValidator, registerValidator } from "../validators/auth.validators";
-import { getMeController, loginController, registerController } from "../controllers/auth.controllers";
-import { authenticate } from "../middlewares/auth.middlewares";
+import { loginValidator, registerValidator } from "../validators/auth.validators.js";
+import { getMeController, loginController, refreshController, registerController } from "../controllers/auth.controllers.js";
+import { authenticate } from "../middlewares/auth.middlewares.js";
 
 const router = Router()
 
@@ -33,7 +33,7 @@ router.post("/login", loginValidator, loginController);
  * @res status code = 200 => if successful
  */
 
-router.get("/refresh", authenticate, getMeController);
+router.post("/refresh", refreshController);
 
 
 export default router;

@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const jobSchema = new moongose.Schema(
+const jobSchema = new mongoose.Schema(
   {
     title: {
       type: String,
@@ -52,7 +52,7 @@ const jobSchema = new moongose.Schema(
             message: "Amount must be positive Integer",
           },
           {
-            validator: (value) => {
+            validator: function(value) {
               return value >= this.salary.minimumSalary;
             },
             message: "Maximum salary can't be less than minimum salary",
@@ -88,7 +88,7 @@ const jobSchema = new moongose.Schema(
     },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "user",
+      ref: "users",
       required: true,
     },
   },

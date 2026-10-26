@@ -1,89 +1,96 @@
 import jobModel from "../models/job.model.js";
+import { matchedData } from "express-validator";
 
 export const createJobController = async (req, res) => {
-  const jobContent = req.body;
+  try {
+    const validatedData = matchedData(req, {
+      locations: ["body"],
+    });
 
-  const { id } = req.user;
+    const job = await jobModel.create({
+      ...validatedData,
+      createdBy: req.user.id,
+    });
 
-  const job = await jobModel.create({
-    title: jobContent.title,
-    department: jobContent.department,
-    employmentType: jobContent.employmentType,
-    location: jobContent.location,
-    workplaceType: jobContent.workplaceType,
-    salary: {
-        currency: jobContent.currency,
-        maximumSalary:jobContent.maximumSalarym,
-        minimumSalary: jobContent.minimumSalary,
-    },
-    aboutRole: jobContent.aboutRole,
-    responsibilities: jobContent.responsibilities,
-    requirements: jobContent.requirements,
-    benifitsAndPerks: jobContent.benifitsAndPerks,
-    createdBy: id,
-    status: "Draft"
-  });
-
-  return res.status(201).json({
-    message: "Job posted successfully",
-    data: {
-        job
-    }
-  })
+    return res.status(201).json({
+      message: "Job posted successfully",
+      job
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Internal server error",
+    });
+  }
 };
 
-export const publishJobController = async (req, res)=> {
-    const {jobId} = req.params;
-    
-    const job = await jobModel.findById(jobId);
+export const publishJobController = async (req, res) => {
+  const { jobId } = req.params;
 
-    if(!job){
-      return res.status(404).json({
-        message: "Job not found"
-      })
-    }
+  const job = await jobModel.findById(jobId);
 
-    await jobModel.findByIdAndUpdate(jobId, {status: "Published"});
-
-    return res.status(200).json({
-      message: "Job published successfully"
-    })
-}
-
-export const closeJobController = async (req, res)=> {
-  const {jobId} = req.params;
-
-  const job = await jobModel.findById(jobId)
-
-  if(!job){
-    return res.status(404).json({
-      message:"Job not found"
-    })
+  if (job.createdBy.toString() !== req.user) {
+    return res.status(401).json({
+      message: "Unauthorized Access",
+    });
   }
 
-  await jobModel.findByIdAndUpdate(jobId, {status: "Closed"});
+  if (!job) {
+    return res.status(404).json({
+      message: "Job not found",
+    });
+  }
+
+  await jobModel.findByIdAndUpdate(jobId, { status: "Published" });
 
   return res.status(200).json({
-    message: "Job closed successfully"
-  })
-}
+    message: "Job published successfully",
+  });
+};
 
-export const deleteJobController = async(req, res)=> {
-  const {jobId} = req.params;
+export const closeJobController = async (req, res) => {
+  const { jobId } = req.params;
 
-  const job = await jobModel.findById(jobId)
+  const job = await jobModel.findById(jobId);
 
-  if(!job){
-    return res.status(404).json({
-      message: "Job not found"
-    })
+  if (job.createdBy.toString() !== req.user) {
+    return res.status(401).json({
+      message: "Unauthorized Access",
+    });
   }
 
-  await jobModel.findByIdAndDelete(jobId)
+  if (!job) {
+    return res.status(404).json({
+      message: "Job not found",
+    });
+  }
+
+  await jobModel.findByIdAndUpdate(jobId, { status: "Closed" });
+
+  return res.status(200).json({
+    message: "Job closed successfully",
+  });
+};
+
+export const deleteJobController = async (req, res) => {
+  const { jobId } = req.params;
+
+  const job = await jobModel.findById(jobId);
+
+  if (job.createdBy.toString() !== req.user) {
+    return res.status(401).json({
+      message: "Unauthorized Access",
+    });
+  }
+
+  if (!job) {
+    return res.status(404).json({
+      message: "Job not found",
+    });
+  }
+
+  await jobModel.findByIdAndDelete(jobId);
 
   return res.staus(200).json({
-    message: "Job deleted successfully"
-  })
-}
-
-
+    message: "Job deleted successfully",
+  });
+};
